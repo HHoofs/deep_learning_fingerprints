@@ -8,9 +8,9 @@ from batch_generator_matching import BatchGenerator_Matching
 # Set globals
 ########################################
 
-path = '/mnt/ssd/data/deep_learning_fingerprints/sd04/png_txt' #'/home/sander/data/deep_learning_fingerprints/sd04/png_txt'
+path = './sd04/png_txt' #'/home/sander/data/deep_learning_fingerprints/sd04/png_txt'
 IMSIZE = 512
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 NUM_STEPS = 11
 
 

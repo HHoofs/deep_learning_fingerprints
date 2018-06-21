@@ -1,10 +1,10 @@
 import tensorflow as tf
 import numpy as np
-from tf_utils import Dense, CNN
+from tf_utils import Dense, CNN, cnn_vgg16
 
 class NeuralNet_Matching:
 
-    def __init__(self, imsize, batchgen, network_type='triplets'):
+    def __init__(self, imsize, batchgen, network_type='triplets', keras_mode=False):
 
         self.imsize = imsize
 
@@ -17,27 +17,41 @@ class NeuralNet_Matching:
         self.session = tf.Session()  # config=tf.ConfigProto(log_device_placement=True)
 
         # Feed placeholders
-        self.x = tf.placeholder(dtype=tf.float32, shape=[None, self.imsize, self.imsize, 3], name='input')
+        if keras_mode:
+            self.x = tf.placeholder(dtype=tf.float32, shape=[None, self.imsize, 1], name='input')
+        else:
+            self.x = tf.placeholder(dtype=tf.float32, shape=[None, self.imsize, self.imsize, 3], name='input')
+
         self.dropout_rate = tf.placeholder(tf.float32)
         self.lr = tf.placeholder(tf.float32)
 
         # Split inputs
-        self.anchor, self.pos, self.neg = tf.split(self.x, 3, axis=3)
-
-
-        # Standardization
-        self.anchor = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.anchor)
-        self.pos = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.pos)
-        self.neg = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.neg)
+        if keras_mode:
+            self.anchor, self.pos, self.neg = tf.split(self.x, 3, axis=0)
+        else:
+            self.anchor, self.pos, self.neg = tf.split(self.x, 3, axis=3)
+            # Standardization
+            self.anchor = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.anchor)
+            self.pos = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.pos)
+            self.neg = tf.map_fn(lambda img: tf.image.per_image_standardization(img), self.neg)
 
 
         # Run the network
         with tf.variable_scope('scope'):
-            self.anchor_embedding = CNN(self.anchor, self.dropout_rate)
+            if keras_mode:
+                self.anchor_embedding = cnn_vgg16(self.anchor, self.dropout_rate)
+            else:
+                self.anchor_embedding = CNN(self.anchor, self.dropout_rate)
         with tf.variable_scope('scope', reuse=True):
-            self.pos_embedding = CNN(self.pos, self.dropout_rate)
+            if keras_mode:
+                self.pos_embedding = cnn_vgg16(self.pos, self.dropout_rate)
+            else:
+                self.pos_embedding = CNN(self.pos, self.dropout_rate)
         with tf.variable_scope('scope', reuse=True):
-            self.neg_embedding = CNN(self.neg, self.dropout_rate)
+            if keras_mode:
+                self.neg_embedding = cnn_vgg16(self.neg, self.dropout_rate)
+            else:
+                self.neg_embedding = CNN(self.neg, self.dropout_rate)
 
 
         if self.network_type == 'triplets':
