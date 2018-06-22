@@ -8,6 +8,8 @@ class NeuralNet_Matching:
 
         self.imsize = imsize
 
+        assert network_type in ['triplets', 'duos'], \
+            '{input} network type not available (either duos, or triplets)'.format(input=network_type)
         self.network_type = network_type
 
         self.batchgen = batchgen

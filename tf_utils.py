@@ -22,6 +22,14 @@ def Conv2D(x, filters, kernel_size, stride, padding='same'):
 
 
 def cnn_vgg16(x, dropout_rate=None):
+    """
+    network that builds upon ta (flat) outcome of a pretrained model in KERAS
+
+    :param x: a tensor
+    :param dropout_rate: float to define the dropout rate between the different dense layers
+    :return: a tensor
+    """
+    # Simple structure
     x = Dense(x, units=512)
     x = tf.layers.dropout(inputs=x, rate=dropout_rate)
     x = Dense(x, units=256)

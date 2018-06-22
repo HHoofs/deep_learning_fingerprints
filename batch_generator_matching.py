@@ -23,8 +23,8 @@ class BatchGenerator_Matching:
         self.images, self.ids = self.parse_data(path, keras_mode)
         self.sample_ids = list(set([x[1:] for x in self.ids]))
 
-        self.sample_ids_train = self.sample_ids[:1600]
-        self.sample_ids_val = self.sample_ids[1600:]
+        self.sample_ids_train = self.sample_ids[:32]
+        self.sample_ids_val = self.sample_ids[32:64]
         self.pre = vgg16.VGG16(include_top=False, input_shape=(imsize,imsize,3), pooling='avg')
 
     def parse_data(self, path, keras_mode=False):
